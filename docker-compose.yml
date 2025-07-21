@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 메모리 관리 서비스 (Mem0.ai + Qdrant)
+  memory-service:
+    build:
+      context: ./services/memory
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - MEM0_API_KEY=${MEM0_API_KEY}
+    volumes:
+      - ./data/memory:/app/data
+    depends_on:
+      - qdrant
+    networks:
+      - ai-network
+
+  # 에이전트 오케스트레이션 서비스 (smolagents)
+  agent-service:
+    build:
+      context: ./services/agent
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - MEMORY_SERVICE_URL=http://memory-service:8001
+    volumes:
+      - ./data/agents:/app/data
+    depends_on:
+      - memory-service
+    networks:
+      - ai-network
+
+  # 벡터 데이터베이스 (Qdrant)
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  qdrant-storage: 

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Partner - 가상 AI 파트너</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="AI 파트너와 대화하고 상호작용하는 가상 AI 애플리케이션">
+    <meta name="theme-color" content="#0ea5e9">
+  </head>
+<body>
+    <!-- 로딩 화면 -->
+            <div id="loading-screen" aria-live="polite">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-robot" style="font-size: 3rem; color: var(--primary-500);" aria-hidden="true"></i>
+            </div>
+            <h2 class="loading-text">AI Partner</h2>
+            <p class="text-muted">가상 AI 파트너를 준비하고 있습니다...</p>
+            <div class="loading" aria-label="로딩 애니메이션"></div>
+        </div>
+    </div>
+
+    <!-- 메인 컨테이너 -->
+    <div id="mobile-view-wrapper">
+        <!-- 상단 상태 바 -->
+        <div id="top-bar" role="status" aria-label="AI 파트너 상태 정보">
+            <!-- AI 파트너 상태 -->
+            <div class="status-section">
+                <div class="ai-status">
+                    <i class="fas fa-robot status-icon online" aria-hidden="true"></i>
+                    <span class="status-text">AI 파트너 온라인</span>
+                </div>
+            </div>
+            
+            <!-- 호감도 섹션 -->
+            <div class="favorability-section">
+                <div class="favorability-container">
+                    <div class="favorability-info">
+                        <i class="fas fa-heart favorability-icon" aria-hidden="true"></i>
+                        <span class="favorability-label">호감도</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="호감도 진행률">
+                            <div id="favorability-bar" class="progress-bar" style="width: 65%;"></div>
+                        </div>
+                        <span class="favorability-percentage">65%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 시스템 정보 -->
+            <div class="system-info">
+                <div class="time-display">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                    <span id="current-time">12:34</span>
+                </div>
+                <div class="connection-status">
+                    <i class="fas fa-wifi" aria-hidden="true"></i>
+                    <span class="connection-text">연결됨</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 비디오 컨테이너 -->
+        <div id="video-container">
+            <video autoplay muted playsinline preload="auto" class="bg-video active" id="video1" aria-label="AI 파트너 비디오">
+                <source src="video_assets/3d_modeling_image_creation.mp4" type="video/mp4">
+                브라우저가 비디오 태그를 지원하지 않습니다.
+            </video>
+            <video muted playsinline preload="auto" class="bg-video" id="video2" aria-label="AI 파트너 비디오">
+                <source src="" type="video/mp4">
+                브라우저가 비디오 태그를 지원하지 않습니다.
+            </video>
+        </div>
+
+        <!-- 음성 인식 결과 -->
+        <div id="transcript-container" role="log" aria-label="음성 인식 결과">
+            <div class="transcript-header">
+                <i class="fas fa-microphone text-success" aria-hidden="true"></i>
+                <span id="transcript-status">음성 인식 준비</span>
+            </div>
+            <div id="transcript"></div>
+        </div>
+
+        <!-- 하단 커맨드 센터 -->
+        <div class="command-center" role="toolbar" aria-label="주요 기능 버튼">
+            <!-- 분석 도구 버튼 -->
+            <button id="analysis-tool-button" class="command-button tooltip interactive" data-tooltip="AI 분석 도구" aria-label="AI 분석 도구 열기">
+                <i class="fas fa-brain" aria-hidden="true"></i>
+            </button>
+            
+            <!-- 3D 아바타 토글 버튼 -->
+            <button id="toggle-3d-button" class="command-button tooltip interactive" data-tooltip="3D 아바타 모드" aria-label="3D 아바타 모드 전환">
+                <i class="fas fa-cube" aria-hidden="true"></i>
+            </button>
+            
+            <!-- 메인 마이크 버튼 -->
+            <button id="mic-button" class="command-button mic-button tooltip interactive" data-tooltip="음성 인식 시작" aria-label="음성 인식 시작/중지">
+                <i class="fas fa-microphone" aria-hidden="true"></i>
+            </button>
+            
+            <!-- 액션 메뉴 버튼 -->
+            <button id="action-menu-button" class="command-button tooltip interactive" data-tooltip="액션 메뉴" aria-label="액션 메뉴 열기">
+                <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <!-- 액션 메뉴 -->
+        <div id="menu-container" role="menu" aria-label="액션 메뉴">
+            <div class="menu-header">
+                <i class="fas fa-cog text-success" aria-hidden="true"></i>
+                <span>액션 메뉴</span>
+            </div>
+            <div class="menu-item interactive" data-video="video_assets/2025-07-16-1043-smile_elegant_sway_then_chin_rest.mp4" role="menuitem" tabindex="0">
+                <i class="fas fa-smile" aria-hidden="true"></i>
+                <span>기쁜 표정</span>
+            </div>
+            <div class="menu-item interactive" data-video="video_assets/2025-07-16-4437-v_pose_smile.mp4" role="menuitem" tabindex="0">
+                <i class="fas fa-hand-peace" aria-hidden="true"></i>
+                <span>V 포즈</span>
+            </div>
+            <div class="menu-item interactive" data-video="video_assets/cheer_video.mp4" role="menuitem" tabindex="0">
+                <i class="fas fa-heart" aria-hidden="true"></i>
+                <span>응원</span>
+            </div>
+            <div class="menu-item interactive" data-video="video_assets/dance_video.mp4" role="menuitem" tabindex="0">
+                <i class="fas fa-music" aria-hidden="true"></i>
+                <span>춤</span>
+            </div>
+            <hr class="menu-divider" aria-hidden="true">
+            <div class="menu-item">
+                <i class="fas fa-language" aria-hidden="true"></i>
+                <span>언어 설정</span>
+                <select id="language-select" aria-label="언어 선택">
+                    <option value="ko-KR">한국어</option>
+                    <option value="en-US">English</option>
+                    <option value="ja-JP">日本語</option>
+                    <option value="zh-CN">中文</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- AI 분석용 바텀 시트 -->
+        <div id="bottom-sheet" role="dialog" aria-label="AI 분석 도구" aria-hidden="true">
+            <div class="sheet-handle-wrapper">
+                <div class="sheet-handle" aria-hidden="true"></div>
+            </div>
+            <div class="sheet-content">
+                <div class="tab-container" role="tablist" aria-label="분석 도구 탭">
+                    <button class="tab-button active" data-tab="sentiment" role="tab" aria-selected="true" aria-controls="sentiment-tab">
+                        <i class="fas fa-heart" aria-hidden="true"></i>
+                        감정 분석
+                    </button>
+                    <button class="tab-button" data-tab="local-asr" role="tab" aria-selected="false" aria-controls="local-asr-tab">
+                        <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                        로컬 음성 인식
+                    </button>
+                    <button class="tab-button" data-tab="emotion-history" role="tab" aria-selected="false">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        감정 히스토리
+                    </button>
+                    <button class="tab-button" data-tab="camera-controls" role="tab" aria-selected="false">
+                        <i class="fas fa-camera" aria-hidden="true"></i>
+                        카메라 제어
+                    </button>
+                    <button class="tab-button" data-tab="tool-call" role="tab" aria-selected="false">
+                        <i class="fas fa-tools" aria-hidden="true"></i>
+                        도구 호출
+                    </button>
+                    <button class="tab-button" data-tab="performance" role="tab" aria-selected="false">
+                        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                        성능 모니터링
+                    </button>
+                    <button class="tab-button" data-tab="settings" role="tab" aria-selected="false">
+                        <i class="fas fa-cog" aria-hidden="true"></i>
+                        설정
+                    </button>
+                </div>
+
+                <!-- 감정 분석 탭 -->
+                <div id="sentiment-tab" class="tab-content active" role="tabpanel" aria-labelledby="sentiment-tab">
+                    <div class="feature-card">
+                        <div class="input-group">
+                            <label for="sentiment-input">
+                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                분석할 텍스트를 입력하세요
+                            </label>
+                            <input type="text" id="sentiment-input" class="input" placeholder="감정을 분석할 텍스트를 입력하세요..." aria-describedby="sentiment-result">
+                        </div>
+                        <button id="analyze-button" class="btn btn-primary interactive">
+                            <i class="fas fa-brain" aria-hidden="true"></i>
+                            감정 분석
+                        </button>
+                        <div class="result-display">
+                            <div id="sentiment-result" class="text-muted" role="status" aria-live="polite">분석 결과가 여기에 표시됩니다.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 로컬 음성 인식 탭 -->
+                <div id="local-asr-tab" class="tab-content" role="tabpanel" aria-labelledby="local-asr-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="input-group">
+                            <label>
+                                <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                                로컬 음성 인식 (Transformers.js)
+                            </label>
+                            <p class="text-sm text-muted">브라우저에서 직접 음성을 텍스트로 변환합니다.</p>
+                        </div>
+                        <button id="local-mic-button" class="btn btn-secondary interactive">
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                            음성 인식 시작
+                        </button>
+                        <div class="result-display">
+                            <div id="local-asr-result" class="text-muted" role="status" aria-live="polite">인식된 텍스트가 여기에 표시됩니다.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 감정 히스토리 탭 -->
+                <div id="emotion-history-tab" class="tab-content" role="tabpanel" aria-labelledby="emotion-history-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="emotion-history-container">
+                            <div class="emotion-chart-container"></div>
+                            <div class="emotion-stats-container"></div>
+                            <div class="emotion-alerts-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카메라 제어 탭 -->
+                <div id="camera-controls-tab" class="tab-content" role="tabpanel" aria-labelledby="camera-controls-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="camera-ui-container">
+                            <!-- 카메라 UI가 여기에 동적으로 추가됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 도구 호출 탭 -->
+                <div id="tool-call-tab" class="tab-content" role="tabpanel" aria-labelledby="tool-call-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="tool-call-container">
+                            <!-- 도구 호출 UI가 여기에 동적으로 추가됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 성능 모니터링 탭 -->
+                <div id="performance-tab" class="tab-content" role="tabpanel" aria-labelledby="performance-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="performance-monitoring-container">
+                            <div class="performance-metrics">
+                                <div class="metric-group">
+                                    <h4>실시간 성능</h4>
+                                    <div class="metric-item">
+                                        <span class="metric-label">FPS:</span>
+                                        <span id="current-fps" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">메모리:</span>
+                                        <span id="current-memory" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">CPU:</span>
+                                        <span id="current-cpu" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">응답시간:</span>
+                                        <span id="current-response-time" class="metric-value">--</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-group">
+                                    <h4>평균 성능</h4>
+                                    <div class="metric-item">
+                                        <span class="metric-label">평균 FPS:</span>
+                                        <span id="avg-fps" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">평균 메모리:</span>
+                                        <span id="avg-memory" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">평균 CPU:</span>
+                                        <span id="avg-cpu" class="metric-value">--</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-group">
+                                    <h4>최적화 상태</h4>
+                                    <div class="metric-item">
+                                        <span class="metric-label">품질 레벨:</span>
+                                        <span id="quality-level" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">캐시 크기:</span>
+                                        <span id="cache-size" class="metric-value">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">최적화 상태:</span>
+                                        <span id="optimization-status" class="metric-value">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-alerts">
+                                <h4>성능 알림</h4>
+                                <div id="alerts-container" class="alerts-list">
+                                    <!-- 알림이 여기에 동적으로 추가됩니다 -->
+                                </div>
+                            </div>
+                            
+                            <div class="performance-recommendations">
+                                <h4>최적화 권장사항</h4>
+                                <div id="recommendations-container" class="recommendations-list">
+                                    <!-- 권장사항이 여기에 동적으로 추가됩니다 -->
+                                </div>
+                            </div>
+                            
+                            <div class="performance-actions">
+                                <button id="refresh-metrics-btn" class="action-btn">
+                                    <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                                    <span>메트릭 새로고침</span>
+                                </button>
+                                <button id="clear-cache-btn" class="action-btn">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                    <span>캐시 정리</span>
+                                </button>
+                                <button id="optimize-now-btn" class="action-btn">
+                                    <i class="fas fa-magic" aria-hidden="true"></i>
+                                    <span>즉시 최적화</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 설정 탭 -->
+                <div id="settings-tab" class="tab-content" role="tabpanel" aria-labelledby="settings-tab" aria-hidden="true">
+                    <div class="feature-card">
+                        <div class="setting-item">
+                            <label for="default-language">
+                                <i class="fas fa-language" aria-hidden="true"></i>
+                                기본 언어
+                            </label>
+                            <select class="setting-dropdown" id="default-language" aria-describedby="language-description">
+                                <option value="ko-KR">한국어</option>
+                                <option value="en-US">English</option>
+                                <option value="ja-JP">日本語</option>
+                                <option value="zh-CN">中文</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="sensitivity-slider">
+                                <i class="fas fa-volume-up" aria-hidden="true"></i>
+                                음성 인식 민감도
+                            </label>
+                            <input type="range" id="sensitivity-slider" min="0.1" max="1.0" step="0.1" value="0.5" class="slider" aria-describedby="sensitivity-value">
+                            <span id="sensitivity-value" aria-live="polite">0.5</span>
+                        </div>
+                        <div class="setting-item">
+                            <label for="theme-toggle">
+                                <i class="fas fa-moon" aria-hidden="true"></i>
+                                다크 모드
+                            </label>
+                            <button id="theme-toggle" class="btn btn-ghost interactive" aria-pressed="false">
+                                <i class="fas fa-sun" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <label for="auto-save">
+                                <i class="fas fa-save" aria-hidden="true"></i>
+                                자동 저장
+                            </label>
+                            <input type="checkbox" id="auto-save" class="toggle" checked>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오버레이 -->
+        <div id="overlay" role="presentation" aria-hidden="true"></div>
+
+        <!-- 알림 컨테이너 -->
+        <div id="notification-container" role="status" aria-live="polite" aria-label="알림"></div>
+
+        <!-- 상태 표시기 -->
+        <div class="status-indicators">
+            <div class="status-item">
+                <span class="status-indicator status-online" aria-label="온라인 상태"></span>
+                <span class="status-text">AI 파트너 온라인</span>
+            </div>
+        </div>
+
+        <!-- 키보드 단축키 도움말 -->
+        <div id="keyboard-help" class="keyboard-help" role="dialog" aria-label="키보드 단축키" aria-hidden="true">
+            <div class="keyboard-help-content">
+                <h3>키보드 단축키</h3>
+                <ul>
+                    <li><kbd>Space</kbd> - 음성 인식 시작/중지</li>
+                    <li><kbd>Tab</kbd> - 다음 요소로 이동</li>
+                    <li><kbd>Escape</kbd> - 메뉴 닫기</li>
+                    <li><kbd>Ctrl + M</kbd> - 액션 메뉴</li>
+                    <li><kbd>Ctrl + A</kbd> - 분석 도구</li>
+                </ul>
+                <button id="close-keyboard-help" class="btn btn-primary">확인</button>
+            </div>
+        </div>
+      </div>
+
+    <!-- 스크립트 로드 -->
+    <script type="module" src="src/script.ts"></script>
+  </body>
+</html>
