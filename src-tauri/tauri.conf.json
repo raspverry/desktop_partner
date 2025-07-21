@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.desktop_partner.app",
   "build": {
-    "beforeDevCommand": "bun run dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
+    "beforeDevCommand": "vite",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "bun run build:web",
     "frontendDist": "../dist"
   },
   "app": {

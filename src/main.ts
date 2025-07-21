@@ -19,54 +19,53 @@ async function initializeApplication() {
     try {
         console.log('AI Partner Desktop 애플리케이션 초기화 시작...');
         
-        // 성능 모니터링 시작
-        if (window.performanceMonitor) {
-            window.performanceMonitor.startMonitoring();
-        }
-        
         // 감정 히스토리 초기화
         window.emotionHistory = emotionHistory;
         console.log('감정 히스토리 시스템 초기화 완료');
         
-        // 애플리케이션 초기화 함수 호출
-        if (typeof window.initializeApp === 'function') {
-            window.initializeApp();
-        } else {
-            console.warn('initializeApp 함수를 찾을 수 없습니다. script.ts가 로드되었는지 확인하세요.');
+        // script.ts가 로드될 때까지 대기
+        let attempts = 0;
+        const maxAttempts = 50; // 5초 대기
+        
+        while (!window.initializeApp && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
         }
         
-        console.log('애플리케이션 초기화 완료');
+        if (window.initializeApp) {
+            window.initializeApp();
+            console.log('애플리케이션 초기화 완료');
+        } else {
+            console.error('initializeApp 함수를 찾을 수 없습니다.');
+            throw new Error('초기화 함수 로드 실패');
+        }
         
     } catch (error) {
         console.error('애플리케이션 초기화 실패:', error);
-        
-        // 사용자에게 오류 알림
-        if (typeof window.showNotification === 'function') {
-            window.showNotification('애플리케이션 초기화 중 오류가 발생했습니다.', 'error');
-        }
+        throw error;
     }
 }
 
 // DOM 로드 완료 시 애플리케이션 초기화
 window.addEventListener("DOMContentLoaded", () => {
-    // 로딩 화면 표시
     const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.style.display = 'flex';
-    }
     
-    // 애플리케이션 초기화
-    initializeApplication().then(() => {
-        // 로딩 화면 숨기기
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-        }
-    }).catch((error) => {
-        console.error('초기화 실패:', error);
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-        }
-    });
+    initializeApplication()
+        .then(() => {
+            console.log('초기화 성공, 로딩 화면 숨김');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+        })
+        .catch((error) => {
+            console.error('초기화 실패:', error);
+            if (loadingScreen) {
+                const loadingText = loadingScreen.querySelector('.loading-text');
+                if (loadingText) {
+                    loadingText.textContent = '초기화 중 오류가 발생했습니다.';
+                }
+            }
+        });
 });
 
 // Tauri 명령어 예제 (참고용)
